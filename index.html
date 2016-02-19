@@ -11,16 +11,25 @@
 <script type="text/javascript">
 var destinationType;
 
-$("document").ready(function inicio(){
+document.addEventListener("deviceready", onDeviceReady, false);
 
-    $("#btnCamara").tap(function pulsacion(){
-    alert("Ejecución correcta");
-        navigator.camera.getPicture(Satisfactorio , Error , {quality:50, allowEdit: true,destinationType: destinationType.DATA_URL});
-    });
-
+function onDeviceReady() {
+     $("#btnCamara").tap(function pulsacion(){
     
+    navigator.camera.getPicture(onSuccess, onFail, { quality: 50,
+    destinationType: Camera.DestinationType.FILE_URI });
 
-});
+    function onSuccess(imageURI) {
+    var image = document.getElementById("myImage");//Seleccionar control con javascript
+   // var image = $("#myImage");//Seleccionar control con Jquery
+    image.src = imageURI;
+    }
+
+    function onFail(message) {
+      alert('Failed because: ' + message);
+    }            
+   });
+}
 </script>
 <style type="text/css">
 #encabezado{
