@@ -8,59 +8,62 @@
 <script type="text/javascript" src="js/jquery-2.2.0.min.js" ></script>
 <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js" ></script>
 
-<script type="text/javascript">
-var destinationType;
-
-document.addEventListener("deviceready", onDeviceReady, false);
-
-function onDeviceReady() {
-     $("#btnCamara").tap(function pulsacion(){
+<script type="text/javascript" charset="utf-8">
+    var pictureSource; 
+    var destinationType;
     
-    navigator.camera.getPicture(onSuccess, onFail, { quality: 50,
-    destinationType: Camera.DestinationType.FILE_URI });
-
-    function onSuccess(imageURI) {
-    var image = document.getElementById("myImage");//Seleccionar control con javascript
-    image.src = imageURI;
-    }
-
-    function onFail(message) {
-      alert('Failed because: ' + message);
-    }            
-   });
+    document.addEventListener("deviceready", onDeviceReady, false);
+function onDeviceReady() {
+    pictureSource = navigator.camera.PictureSourceType;
+    destinationType = navigator.camera.DestinationType;
+}
+function onPhotoDataSuccess(imageData){
+    var smallImage = document.getElementById('smallImage');
+    smallImage.style.display = 'block';
+    smallImage.src = "data:image/jpeg;base64," + imageData;
+}
+function onPhotoURISuccess(imageURI){
+    var largeImage = document.getElementById('largeImage');
+    largeImage.style.display = 'block';
+    largeImage.src = imageURI;
+}
+function capturePhoto(){
+    navigator.camera.getPicture(onPhotoDataSuccess, onFail,{ quality: 50, 
+        destinationType: destinationType.DATA_URL});
+}
+function capturePhotoEdit(){
+    navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 20, allowEdit: true, 
+        destinationType: destinationType.DATA_URL});
+}
+function getPhoto(source){
+    navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50, 
+        destinationType: destinationType.FILE_URI,
+    sourceType: source});
+}
+function onFail(message){
+    alert ('Failed because: ' + message);
 }
 </script>
 <style type="text/css">
-#encabezado{
-text-align:center;
-font-size: 14px;
-color:red;
-font-weight:bold;
-}
-#pie{
-text-align:center;
-font-size:8px;
-color:green;
-font-weight:bold;
-}
+    p{
+        text-align: center;
+    }
 </style>
 </head>
 <body>
-<div data-role="page" id="principal">
-	<div data-role="header">
-		<h1>Mi aplicación</h1>
-	</div>
-	<div data-role="content">
-		<input type="button" value="Acceder a camara" id="btnCamara" />
-		<img src="" id="myImage" />
-  	</div>
-	<div data-role="footer">
-     	<div  data-role="controlgroup" data-type="horizontal">
-			<a href="#segunda" class="ui-btn ui-icon-info-white ui-icon-left">Abrir</a>
-			<a href="#" class="ui-btn">Fecebook</a>
-			<a href="#" class="ui-btn">Twitter</a>
-		</div>
-	</div>
-</div>
+    <div>
+        <div data-role="content">
+            <p>Acceso a camara</p>
+            <button onclick="capturePhoto();">Capture Photo</button><br>
+            <button onclick="capturePhotoEdit();">Capture Editable Photo</button><br>
+            <button onclick="getPhoto(pictureSource.PHOTOLIBRARY);">From Photo Library</button><br>
+            <button onclick="getPhoto(pictureSource.SAVEDPHOTOALBUM);">From Photo Album</button><br>
+            <img style="display:none; width:60px; height:60px;" id="smallImage" src=""/>
+            <img style="display:none;" id="largeImage" src="" />
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <p>Pie de aplicación</p>
+        </div>
+    </div>
 </body>
 </html>
